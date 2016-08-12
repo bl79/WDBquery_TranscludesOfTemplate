@@ -1,11 +1,16 @@
 <?php
 
-if (isset($_GET['lang']) and isset($_GET['template']) and isset($_GET['format'])) {
-	
-	 $dbhost = $_GET['lang'].'wiki.labsdb';
-	 $dbtable = $_GET['lang'].'wiki_p';
-	 $config = parse_ini_file('password.ini');
+echo str_replace(' ', '_', ucfirst('вершины Каменного Пояса'));
 
+
+if (isset($_GET['lang']) and isset($_GET['template']) and isset($_GET['format'])) {
+
+	$dbhost = $_GET['lang'].'wiki.labsdb';
+	$dbtable = $_GET['lang'].'wiki_p';
+	$config = parse_ini_file('password.ini');
+	
+	$_GET['template'] = str_replace(' ', '_', ucfirst($_GET['template']));
+	
 	$query = 'SELECT page_title FROM page JOIN templatelinks ON tl_from = page_id WHERE tl_namespace = 10 AND tl_title = "'. $_GET['template'] .'" AND page_namespace = 0';
 
 	// mysql инициация
@@ -22,14 +27,14 @@ if (isset($_GET['lang']) and isset($_GET['template']) and isset($_GET['format'])
 				foreach ($row as $k) $arr_list[] = $k;
 
 			switch ($_GET['format']) {
-				case 'plain':
-					foreach ($arr_list as $k) print $k."\n";
-					break;
-				case 'html':
+				case 'html':				
 					print "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'/></head><body><ul>\n";
 					foreach ($arr_list as $k) print "<li>".$k."</li>\n";
 					print "</ul></body></html>";
 					break;
+				case 'plain':
+					foreach ($arr_list as $k) print $k."\n";
+					break;					
 				case 'json':
 					while ($row = $p->fetch_assoc())
 						foreach ($row as $k) $arr_list[] = $k;
