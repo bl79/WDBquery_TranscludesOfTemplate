@@ -1,17 +1,18 @@
 <?php
 
-echo str_replace(' ', '_', ucfirst('вершины Каменного Пояса'));
-
+// В верхний регистр 1-ю букву строки
+function mb_firstToUpper($word, $encoding = 'UTF8') {
+	return mb_strtoupper(mb_substr($word,0,1,$encoding),$encoding) . mb_substr($word,1,mb_strlen($word),$encoding);
+}
 
 if (isset($_GET['lang']) and isset($_GET['template']) and isset($_GET['format'])) {
 
 	$dbhost = $_GET['lang'].'wiki.labsdb';
 	$dbtable = $_GET['lang'].'wiki_p';
 	$config = parse_ini_file('password.ini');
+	$tpl_name = str_replace(' ', '_', mb_firstToUpper($_GET['template']));
 	
-	$_GET['template'] = str_replace(' ', '_', ucfirst($_GET['template']));
-	
-	$query = 'SELECT page_title FROM page JOIN templatelinks ON tl_from = page_id WHERE tl_namespace = 10 AND tl_title = "'. $_GET['template'] .'" AND page_namespace = 0';
+	$query = 'SELECT page_title FROM page JOIN templatelinks ON tl_from = page_id WHERE tl_namespace = 10 AND tl_title = "'. $tpl_name .'" AND page_namespace = 0';
 
 	// mysql инициация
 	$mysql_init = "SET NAMES 'utf8'; SET CHARACTER SET 'utf8'; SET SESSION collation_connection = 'utf8_general_ci'; SET TIME_ZONE = '+03:00'";
@@ -55,7 +56,7 @@ Return transcludes of template in format utf-8.</p>
 <h3>Параметры / Parameters GET</h3>
 <ul>
 <li><b>lang</b> - язык wiki.</li>
-<li><b>template</b> - возможно надо указать точно регистр первой буквы, иначе страниц не найдётся. / perhaps should to certain case of first letter of template for search pages.</li>
+<li><b>template</b> - первый символ автоконвертируется в верхний регистр, как заголовки хранятся в базе данных / first letter autoconverting to upper case, as titles stored in databasr.</li>
 <li><b>format</b> - одно из следующих значений | a next value:
 	<ul>
 	<li><b>plain</b> - разделитель|delimeter "\\n" (перевод строки|new line)</li>
